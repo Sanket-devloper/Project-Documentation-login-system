@@ -34,6 +34,7 @@ function delay<T>(value: T, ms = 600): Promise<T> {
 
 function toPublicUser(user: StoredUser): User {
   const { password: _password, ...publicUser } = user;
+  void _password;
   return publicUser;
 }
 
