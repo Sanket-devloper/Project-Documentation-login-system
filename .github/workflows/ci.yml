@@ -47,6 +47,7 @@ jobs:
           -Dsonar.projectKey=Sanket-devloper_Project-Documentation-login-system
           -Dsonar.organization=sanket-devloper
           -Dsonar.token=${SONAR_TOKEN}
+          -Dsonar.qualitygate.wait=true
 
 
   frontend-ci:
