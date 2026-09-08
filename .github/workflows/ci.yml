@@ -1,0 +1,68 @@
+name: Login System CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  backend-ci:
+    name: Backend Build and Test
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: auth-backend
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Run backend tests
+        run: mvn clean test
+
+      - name: Build backend
+        run: mvn clean package -DskipTests
+
+
+  frontend-ci:
+    name: Frontend Build and Lint
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: auth-frontend/auth-frontend
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: auth-frontend/auth-frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Build frontend
+        run: npm run build
