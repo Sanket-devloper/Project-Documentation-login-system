@@ -78,3 +78,50 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+
+
+  docker-publish:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+
+    needs:
+      - backend-ci
+      - frontend-ci
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build backend Docker image
+        run: |
+          docker build \
+            -t ghcr.io/${{ github.repository_owner }}/project-documentation-login-system-backend:latest \
+            ./auth-backend
+
+      - name: Build frontend Docker image
+        run: |
+          docker build \
+            -t ghcr.io/${{ github.repository_owner }}/project-documentation-login-system-frontend:latest \
+            ./auth-frontend/auth-frontend
+
+      - name: Push backend Docker image
+        run: |
+          docker push \
+            ghcr.io/${{ github.repository_owner }}/project-documentation-login-system-backend:latest
+
+      - name: Push frontend Docker image
+        run: |
+          docker push \
+            ghcr.io/${{ github.repository_owner }}/project-documentation-login-system-frontend:latest
